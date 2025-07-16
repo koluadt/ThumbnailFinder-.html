@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Thumbnail</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; max-width: 600px; margin: auto; }
+        form { margin-bottom: 30px; }
+        input, button { padding: 10px; margin: 10px 0; width: 100%; box-sizing: border-box; }
+        .flash-messages { color: green; margin-bottom: 20px; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        p.or { text-align: center; font-weight: bold; margin: 15px 0; }
+        /* Added smaller checkbox label style */
+        label.keep-creator-label {
+            font-weight: normal;
+            display: inline-block;
+            margin-top: 0;
+            margin-left: 5px;
+            font-size: 0.9em;
+            vertical-align: middle;
+        }
+        input#keepCreator {
+            width: auto;
+            vertical-align: middle;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>➕ Add Thumbnail</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data">
+        <label for="creator">Creator Name (for placeholder account):</label>
+        <input id="creator" type="text" name="creator" placeholder="Enter creator's name" required>
+
+        <!-- New Keep Creator Name checkbox -->
+        <input type="checkbox" id="keepCreator" />
+        <label for="keepCreator" class="keep-creator-label">Keep creator name</label>
+
+        <label for="thumbnail">Upload Thumbnail Image:</label>
+        <input id="thumbnail" type="file" name="thumbnail" accept=".jpg,.jpeg,.png">
+
+        <p class="or">OR</p>
+
+        <label for="youtube_url">Paste YouTube Video Link:</label>
+        <input id="youtube_url" type="url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." >
+
+        <button type="submit">Add to Database</button>
+    </form>
+
+    <a href="/">← Back to Search</a>
+
+    <script>
+        function toggleKeepCreator() {
+            const checkbox = document.getElementById("keepCreator");
+            const creatorField = document.getElementById("creator");
+            if (checkbox.checked) {
+                localStorage.setItem("keepCreatorName", "true");
+                localStorage.setItem("savedCreatorName", creatorField.value);
+            } else {
+                localStorage.removeItem("keepCreatorName");
+                localStorage.removeItem("savedCreatorName");
+            }
+        }
+
+        window.onload = function () {
+            const saved = localStorage.getItem("keepCreatorName");
+            const savedName = localStorage.getItem("savedCreatorName");
+            const checkbox = document.getElementById("keepCreator");
+            const creatorField = document.getElementById("creator");
+
+            if (saved && savedName) {
+                checkbox.checked = true;
+                creatorField.value = savedName;
+            }
+
+            // Add event listener for checkbox toggle
+            checkbox.addEventListener("change", toggleKeepCreator);
+
+            // Update saved name as user types
+            creatorField.addEventListener("input", () => {
+                if (localStorage.getItem("keepCreatorName")) {
+                    localStorage.setItem("savedCreatorName", creatorField.value);
+                }
+            });
+        };
+    </script>
+</body>
+</html>

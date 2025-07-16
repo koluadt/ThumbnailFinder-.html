@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Creators</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+        h1 { text-align: center; }
+        form { margin-bottom: 20px; }
+        input[type="text"] { width: 100%; padding: 10px; }
+        button { padding: 10px; width: 100%; }
+        .creator { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        .source { font-size: 0.85em; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Search Creators</h1>
+
+    <form method="POST">
+        <input type="text" name="query" placeholder="Enter creator name, email, or phone..." value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results %}
+        <h2>Results</h2>
+        {% for r in results %}
+            <div class="creator">
+                <strong>{{ r.name }}</strong><br>
+                {% if r.email %}<div>Email: {{ r.email }}</div>{% endif %}
+                {% if r.phone %}<div>Phone: {{ r.phone }}</div>{% endif %}
+                <div class="source">Source: {{ r.source }}</div>
+                {% if r.link %}
+                    <div><a href="{{ url_for('creator_profile', name=r.name) }}">View Profile →</a></div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% elif query %}
+        <p>No results found.</p>
+    {% endif %}
+
+    <a href="/">← Back to Home</a>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Match Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        h1, h2, h3, h4 {
+            margin-bottom: 10px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        img.best {
+            width: 300px;
+            height: auto;
+            margin: 10px;
+            border: 3px solid #4CAF50;
+        }
+
+        .runner-ups,
+        .alternate-runner-ups {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto 40px;
+        }
+
+        .thumbnail-box {
+            width: 120px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+
+        .thumbnail-box img {
+            width: 100%;
+            height: auto;
+            opacity: 0.85;
+            transition: transform 0.2s ease, opacity 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail-box img:hover {
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: #2196F3;
+            z-index: 10;
+            position: relative;
+        }
+
+        .creator-link {
+            color: #2196F3;
+            text-decoration: none;
+        }
+
+        .creator-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>🖼️ Your Match</h1>
+
+    {% if best_match %}
+    <div class="row">
+        <div>
+            <h3>🔼 Uploaded Thumbnail</h3>
+            <img src="/uploads/{{ uploaded }}" alt="Uploaded image" class="best">
+        </div>
+        <div>
+            <h3>🎯 Best Match: {{ best_match.split('.')[0] }}</h3>
+            <img src="/thumbnails/{{ best_match }}" alt="Best match image" class="best">
+            <h4>👤 Creator: 
+                <a href="/creator/{{ creator_links[best_match]|urlencode }}" class="creator-link">
+                    {{ creator_links[best_match] }}
+                </a>
+            </h4>
+            <h4>🔍 Similarity Score: {{ best_score | round(4) }}</h4>
+        </div>
+    </div>
+
+    {% if runner_ups %}
+    <h3>👥 Runner-up Matches</h3>
+    <div class="runner-ups">
+        {% for filename, score in runner_ups %}
+        <div class="thumbnail-box">
+            <img src="/thumbnails/{{ filename }}" alt="{{ filename }}">
+            <div>
+                <a href="/creator/{{ creator_links[filename]|urlencode }}" class="creator-link">
+                    {{ creator_links[filename] }}
+                </a>
+            </div>
+            <div>Score: {{ score | round(4) }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if alternate_runner_ups %}
+    <h3>🔄 From Alternate Creators</h3>
+    <div class="alternate-runner-ups">
+        {% for filename, score in alternate_runner_ups %}
+        <div class="thumbnail-box">
+            <img src="/thumbnails/{{ filename }}" alt="{{ filename }}">
+            <div>
+                <a href="/creator/{{ creator_links[filename]|urlencode }}" class="creator-link">
+                    {{ creator_links[filename] }}
+                </a>
+            </div>
+            <div>Score: {{ score | round(4) }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <h2>❌ No strong match found.</h2>
+    <p>Your thumbnail didn’t closely resemble any known samples in the database.</p>
+    <img src="/uploads/{{ uploaded }}" alt="Uploaded image">
+    {% endif %}
+
+    <br><br>
+    <a href="/">🔁 Try Another</a>
+</body>
+</html>
